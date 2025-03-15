@@ -1,0 +1,342 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+{% block title %} Home {% endblock title %}
+
+{% block body %} 
+
+<br>
+<div class="container">
+  <div class="col-md-13">
+    <form id="searchform" class="form-horizontal" role="search" method="get" action=''>
+          <div class="form-group">
+              <div class="input-group">
+                  <input type="text" class="form-control input-lg " name="q" style="border-radius: 5px;"
+                  value="{{ request.GET.q }}" placeholder= "Search Songs "/>
+                                  
+                  <span class='input-group-btn mx-2'>
+                    <button type="submit" style="border-radius: 5px;" class="btn btn-primary">Search</button>
+                  </span>
+              </div>
+          </div>
+      </form>
+  </div>
+
+{% if query_search %}
+  <header class="section-heading">
+    <h5 class="section-title">Search Results</h5>
+  </header>
+<hr>
+{% endif %}
+<!-- Recent Song -->
+{% if recent_songs %}
+{% if not query_search %}
+  <header class="section-heading">
+    <h5 class="section-title">Recently Played</h5>
+  </header>
+<hr>
+{% endif %}
+<!-- Recent Song list -->
+<div class="row" style="margin-right: 65px;margin-left:-15px">
+  {% for song in recent_songs %}
+      <div class="col-md-2">
+          <div class="hovereffect">
+            <img src="{{ song.song_img.url}}" class="img-responsive" height="135" width="135" style="border-radius: 8px 8px 8px 8px;" alt="{{ song.title }}">
+            <div class="overlay">
+                <a class="btn btn-outline-light mt-5 mx-1" href="{% url 'play_song_index' song.id %}" class="play-song" data-language="{{ song.language }}"><i class="fa fa-play" aria-hidden="true"></i></a>
+                <a class="btn btn-outline-light mt-5 mx-1" href="{% url 'detail' song.id %}"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
+             </div>
+          </div>
+      </div>
+      {% endfor %}
+      <a href="{% url 'recent' %}" class="btn btn-primary float-right" style="height: 135px;"><center style="margin-top: 45px;">View all <i class="fa fa-arrow-right" aria-hidden="true"></i></center></a>
+
+</div>
+
+<br>
+<br>
+{% endif %}
+
+<!-- All Songs -->
+{% if not query_search %}
+  <header class="section-heading">
+    <h5 class="section-title">TRENDING SONGS</h5>
+  </header>
+<hr>
+{% endif %}
+<!-- Song list -->
+<div class="row" style="margin-right: 65px;margin-left:-15px">
+
+  {% if all_songs %}
+  {% for song in all_songs %}
+      <div class="col-md-2">
+          <div class="hovereffect">
+            <img src="{{ song.song_img.url}}" class="img-responsive" height="135" width="135" style="border-radius: 8px 8px 8px 8px;" alt="{{ song.title }}">
+            <div class="overlay">
+                <a class="btn btn-outline-light mt-5 mx-1" href="{% url 'play_song_index' song.id %}" class="play-song" data-language="{{ song.language }}"><i class="fa fa-play" aria-hidden="true"></i></a>
+                <a class="btn btn-outline-light mt-5 mx-1" href="{% url 'detail' song.id %}"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
+             </div>
+          </div>
+
+      </div>
+      {% endfor %}
+      {% endif %}
+      {% if not query_search %}
+      <a href="{% url 'all_songs' %}" class="btn btn-primary float-right" style="height: 135px;"><center style="margin-top: 45px;">View all <i class="fa fa-arrow-right" aria-hidden="true"></i></center></a>
+      {% endif %}
+    </div>
+<br>
+<br>
+
+<!-- Popup for Song Notification -->
+<div id="popup" style="display: none;">
+    <div class="popup-content">
+        <h2>You might like this!</h2>
+        <p id="song-title"></p> <!-- Display the song title -->
+        <h5>Other Songs in this Category:</h5>
+        <ul id="category-songs-list"></ul> <!-- List of songs from the same category -->
+        <div class="popup-buttons">
+            <button id="play-button">Play Now</button>
+            <button id="close-button">Dismiss</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    #popup {
+        position: fixed;
+        top: 20%; /* Adjusted for better visibility */
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #4d41f3; /* Spotify green */
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        color: #fff;
+        z-index: 1000; /* Ensure it appears above other content */
+        width: 300px; /* Fixed width for consistency */
+        display: none; /* Initially hidden */
+        opacity: 0; /* Start with opacity 0 for animation */
+        transition: opacity 0.5s ease, transform 0.5s ease; /* Smooth transition */
+    }
+
+    .popup-content {
+        padding: 20px;
+        text-align: center;
+    }
+
+    #popup h2 {
+        margin-top: 0;
+        font-size: 1.5em;
+    }
+
+    #category-songs-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 10px 0;
+    }
+
+    #category-songs-list li {
+        margin: 5px 0;
+        font-size: 0.9em;
+    }
+
+    .popup-buttons {
+        margin-top: 15px;
+    }
+
+    #play-button, #close-button {
+        background-color: #fff;
+        color: #1DB954; /* Spotify green */
+        border: none;
+        padding: 10px 15px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        margin: 0 5px;
+        transition: background-color 0.3s;
+    }
+
+    #play-button:hover, #close-button:hover {
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+</style>
+
+<script>
+    // Function to fetch songs from the same language
+    function fetchSongsByLanguage(language) {
+        return fetch(`/fetch-songs/${language}/`)  // Adjust the URL as necessary
+            .then(response => response.json())
+            .then(data => {
+                return data; // Return the fetched songs
+            });
+    }
+
+    // Function to show the popup after 30 seconds
+    function showPopup(songTitle, languageSongs) {
+        const popup = document.getElementById("popup");
+        const titleElement = document.getElementById("song-title");
+        titleElement.textContent = `Now playing: ${songTitle}`; // Display the song title
+
+        // Populate the language songs list
+        const languageSongsList = document.getElementById("category-songs-list");
+        languageSongsList.innerHTML = ''; // Clear previous songs
+        languageSongs.forEach(song => {
+            const listItem = document.createElement('li');
+            listItem.textContent = song.name; // Assuming song has a name property
+            languageSongsList.appendChild(listItem);
+        });
+
+        // Show the popup with animation
+        popup.style.display = "block";
+        setTimeout(() => {
+            popup.style.opacity = 1; // Fade in
+            popup.style.transform = "translate(-50%, -50%) scale(1)"; // Scale in
+        }, 10); // Small timeout to trigger the transition
+
+        // Hide the popup after 10 seconds
+        setTimeout(() => {
+            popup.style.opacity = 0; // Fade out
+            setTimeout(() => {
+                popup.style.display = "none"; // Hide after fade out
+            }, 500); // Match the duration of the fade out
+        }, 10000); // 10 seconds
+    }
+
+    // Event listener for play buttons
+    document.querySelectorAll('.play-song').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const songTitle = event.target.closest('.hovereffect').querySelector('img').alt; // Assuming the song title is in the alt attribute of the image
+            const language = button.getAttribute('data-language'); // Get the language from the data attribute
+
+            // Fetch songs from the same language
+            fetchSongsByLanguage(language).then(languageSongs => {
+                // Show the popup after 30 seconds
+                setTimeout(() => showPopup(songTitle, languageSongs), 30000); // 30 seconds
+            });
+        });
+    });
+
+    // Close button functionality
+    document.getElementById("close-button").addEventListener("click", () => {
+        const popup = document.getElementById("popup");
+        popup.style.opacity = 0; // Fade out
+        setTimeout(() => {
+            popup.style.display = "none"; // Hide after fade out
+        }, 500); // Match the duration of the fade out
+    });
+</script>
+
+<!-- Hindi Songs -->
+{% if not query_search %}
+  <header class="section-heading">
+    <h5 class="section-title">NEW SONGS</h5>
+  </header>
+<hr>
+{% endif %}
+<!-- Song list -->
+<div class="row" style="margin-right: 65px;margin-left:-15px">
+  {% if local_songs %}
+  {% for song in local_songs %}
+      <div class="col-md-2">
+          <div class="hovereffect">
+            <img src="{{ song.song_img.url}}" class="img-responsive" height="135" width="135" style="border-radius: 8px 8px 8px 8px;">
+            <div class="overlay">
+                <a class="btn btn-outline-light mt-5 mx-1" href="{% url 'play_song_index' song.id %}"><i class="fa fa-play" aria-hidden="true"></i></a>
+                <a class="btn btn-outline-light mt-5 mx-1" href="{% url 'detail' song.id %}"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
+             </div>
+          </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+      {% if not query_search %}
+      <a href="{% url 'local_songs' %}" class="btn btn-primary float-right" style="height: 135px;"><center style="margin-top: 45px;">View all <i class="fa fa-arrow-right" aria-hidden="true"></i></center></a>
+      {% endif %}
+</div>
+<br>
+<br>
+
+<!-- English Songs -->
+{% if not query_search %}
+  <header class="section-heading">
+    <h5 class="section-title">ON DEMAND</h5>
+  </header>
+<hr>
+{% endif %}
+<!-- Song list -->
+<div class="row" style="margin-right: 65px;margin-left:-15px">
+  {% if english_songs %}
+  {% for song in english_songs %}
+      <div class="col-md-2">
+          <div class="hovereffect">
+            <img src="{{ song.song_img.url}}" class="img-responsive" height="135" width="135" style="border-radius: 8px 8px 8px 8px;">
+            <div class="overlay">
+                <a class="btn btn-outline-light mt-5 mx-1" href="{% url 'play_song_index' song.id %}"><i class="fa fa-play" aria-hidden="true"></i></a>
+                <a class="btn btn-outline-light mt-5 mx-1" href="{% url 'detail' song.id %}"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
+             </div>
+          </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+      {% if not query_search %}
+      <a href="{% url 'english_songs' %}" class="btn btn-primary float-right" style="height: 135px;"><center style="margin-top: 45px;">View all <i class="fa fa-arrow-right" aria-hidden="true"></i></center></a>
+      {% endif %}
+    </div>
+</div>
+<br>
+<!-- Recommended Songs -->
+{% if recommended_songs %}
+  <header class="section-heading">
+    <h5 class="section-title">Recommended For You</h5>
+  </header>
+  <hr>
+  <div class="row" style="margin-right: 65px;margin-left:-15px">
+    {% for song in recommended_songs %}
+      <div class="col-md-2">
+        <div class="hovereffect">
+          <img src="{{ song.song_img.url }}" class="img-responsive" height="135" width="135" style="border-radius: 8px 8px 8px 8px;">
+          <div class="overlay">
+            <a class="btn btn-outline-light mt-5 mx-1" href="{% url 'play_song_index' song.id %}">
+              <i class="fa fa-play" aria-hidden="true"></i>
+            </a>
+            <a class="btn btn-outline-light mt-5 mx-1" href="{% url 'detail' song.id %}">
+              <i class="fa fa-info-circle" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    <a href="{% url 'recommended' %}" class="btn btn-primary float-right" style="height: 135px;">
+      <center style="margin-top: 45px;">View all <i class="fa fa-arrow-right" aria-hidden="true"></i></center>
+    </a>
+  </div>
+  <br><br>
+{% endif %}
+
+<footer class="footer">
+  <div class="player" style="padding: 10px; background-color: #459dfb; display: flex; align-items: center;">
+      <div class="left">
+          <img id="current-song-img" src="{{last_played.song_img.url}}" height="90" width="90" style="border-radius: 10px;">
+      </div>
+      <div class="right" style="flex-grow: 1;">
+          <div class="top">
+              <a id="current-song-title" class="song" style="margin-left: 15px; color: white;">{{ last_played.name }}</a>
+              <a id="current-song-artist" class="artist" style="margin-left: 15px; color: white;">{{ last_played.album }}</a>
+          </div>
+          <div class="bottom" style="display: flex; align-items: center;">
+              <button id="prev-song" style="margin-right: 10px; background: none; border: none; color: white; font-size: 20px;">
+                  <i class="fa fa-step-backward"></i>
+              </button>
+              
+              <audio id="audio-player" controls style="width: 100%; height: 30px;">
+                  <source id="audio-source" src="{{ last_played.song_file.url }}" type="audio/mpeg">
+              </audio>
+
+              <button id="next-song" style="margin-left: 10px; background: none; border: none; color: white; font-size: 20px;">
+                  <i class="fa fa-step-forward"></i>
+              </button>
+          </div>
+      </div>
+  </div>
+</footer>
+
+
+{% endblock body %}

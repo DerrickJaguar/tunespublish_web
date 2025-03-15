@@ -1,0 +1,75 @@
+/* Ensures the settings panel does not take the full page width and aligns to the left */
+.settings-container {
+    width: 50%; /* Adjust width as necessary */
+    margin-left: 0;
+    padding: 20px;
+    background-color: #f4f4f4; /* Light grey background; adjust if different */
+    border-radius: 10px; /* Add a subtle border radius */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+}
+
+/* Applies the TunesPublish blue theme color */
+.blue-theme {
+    background-color: #459dfb; /* Adjust the color to match TunesPublish blue */
+    color: white;
+    padding: 10px; /* Add some padding to the blue theme container */
+    border-radius: 10px; /* Add a subtle border radius */
+}
+
+/* Form and input styling to match the TunesPublish theme */
+.input-control {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px; /* Increase font size for better readability */
+}
+
+.input-control:focus {
+    border-color: #459dfb; /* Change border color on focus */
+    box-shadow: 0 0 5px rgba(69, 157, 251, 0.5); /* Add a subtle box shadow on focus */
+}
+
+.button {
+    background-color: #459dfb; /* Blue background */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px; /* Increase font size for better readability */
+}
+
+.button:hover {
+    background-color: #307ecf; /* Darker blue on hover */
+}
+
+.button:active {
+    background-color: #2a6ebf; /* Even darker blue on active */
+}
+
+/* Add some spacing between elements */
+.settings-container > * {
+    margin-bottom: 20px;
+}
+
+/* Add a title to the settings container */
+.settings-container > h2 {
+    margin-top: 0;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Example usage */
+<div class="settings-container">
+    <h2>Settings</h2>
+    <div class="blue-theme">
+        <h3>General Settings</h3>
+        <input type="text" class="input-control" placeholder="Enter your name">
+        <input type="email" class="input-control" placeholder="Enter your email">
+        <button class="button">Save Changes</button>
+    </div>
+</div>

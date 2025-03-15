@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %} Recommended Songs {% endblock title %}
+{% block body %}
+  <div class="container">
+    <header class="section-heading">
+      <h5 class="section-title">RECOMMENDED FOR YOU</h5>
+    </header>
+    <hr>
+    <div class="row">
+      {% for song in recommended_songs %}
+        <div class="col-md-2">
+          <div class="hovereffect">
+            <img src="{{ song.song_img.url }}" class="img-responsive" height="135" width="135" style="border-radius: 8px;">
+            <div class="overlay">
+              <a class="btn btn-outline-light mt-5 mx-1" href="{% url 'play_song_index' song.id %}">
+                <i class="fa fa-play" aria-hidden="true"></i></a>
+              <a class="btn btn-outline-light mt-5 mx-1" href="{% url 'detail' song.id %}">
+                <i class="fa fa-info-circle" aria-hidden="true"></i></a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

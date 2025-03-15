@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+{% block title %} Settings {% endblock title %}
+{% block body %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="stylesheet" href="{% static 'musicapp/css/settings.css' %}">
+</head>
+<body>
+    <div class="container">
+        
+        <h2>Welcome, {{ user.username }}!</h2>
+        <h3>Set up your Account</h3>
+        <form method="post" action="{% url 'settings' %}">
+            {% csrf_token %}
+            
+            <!-- Account Information Section -->
+            <div class="settings-section">
+                <!--<h3>Account Information</h3>-->
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" class="form-control" value="{{ user.email }}">
+                </div>
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" class="form-control" value="{{ user.username }}">
+                </div>
+                <div class="form-group">
+                    <label for="password">New Password:</label>
+                    <input type="password" id="password" name="password" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password">Confirm New Password:</label>
+                    <input type="password" id="confirm_password" name="confirm_password" class="form-control">
+                </div>
+            </div>
+
+            <!-- Music Preferences Section -->
+            <div class="settings-section">
+                <h3>Music Preferences</h3>
+                <div class="form-group">
+                    <label for="genres">Favorite Genres:</label>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="genresDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Select Genres
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="genresDropdown">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="pop" id="pop">
+                                <label class="form-check-label" for="pop">
+                                    Pop
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="rock" id="rock">
+                                <label class="form-check-label" for="rock">
+                                    Rock
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="hip-hop" id="hip-hop">
+                                <label class="form-check-label" for="hip-hop">
+                                    Hip-Hop
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="jazz" id="jazz">
+                                <label class="form-check-label" for="jazz">
+                                    Jazz
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="classical" id="classical">
+                                <label class="form-check-label" for="classical">
+                                    Classical
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="artists">Favorite Artists:</label>
+                    <input type="text" id="artists" name="artists" class="form-control" placeholder="Add your favorite artists...">
+                </div>
+            </div>
+
+            <!-- Notifications Settings -->
+            <div class="settings-section">
+                <h3>Notifications</h3>
+                <div class="form-group">
+                    <input type="checkbox" id="email_notifications" name="email_notifications" value="yes" {% if user.profile.email_notifications %}checked{% endif %}>
+                    <label for="email_notifications">Receive email notifications about new releases, recommendations, etc.</label>
+                </div>
+                <div class="form-group">
+                    <input type="checkbox" id="app_notifications" name="app_notifications" value="yes" {% if user.profile.app_notifications %}checked{% endif %}>
+                    <label for="app_notifications">Receive app notifications.</label>
+                </div>
+            </div>
+
+            <!-- Subscription Information Section -->
+            <!--<div class="settings-section">
+                <h3>Subscription</h3>
+                <div class="form-group">
+                    <label for="subscription_plan">Current Plan:</label>
+                    <input type="text" id="subscription_plan" name="subscription_plan" class="form-control" value="{{ user.profile.subscription_plan }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="payment_method">Payment Method:</label>
+                    <input type="text" id="payment_method" name="payment_method" class="form-control" value="{{ user.profile.payment_method }}">
+                </div>
+            </div>-->
+
+            <!-- Privacy Settings -->
+            <div class="settings-section">
+                <h3>Privacy Settings</h3>
+                <div class="form-group">
+                    <input type="checkbox" id="profile_visibility" name="profile_visibility" value="public" {% if user.profile.profile_visibility == 'public' %}checked{% endif %}>
+                    <label for="profile_visibility">Make my profile public.</label>
+                </div>
+                <div class="form-group">
+                    <input type="checkbox" id="share_playlists" name="share_playlists" value="yes" {% if user.profile.share_playlists %}checked{% endif %}>
+                    <label for="share_playlists">Allow others to see my public playlists.</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+    </div>
+
+    <script src="{% static 'musicapp/js/settings.js' %}"></script>
+</body>
+</html>
+
+{% endblock body %}
