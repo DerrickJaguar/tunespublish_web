@@ -1,0 +1,57 @@
+{% load static %}  <!-- Load static files -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to TunesPublish</title>
+    
+    <!-- Background Image CSS -->
+    <style>
+        body {
+            background: url("{% static 'images/tunes_bg.jpeg' %}") no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            background: rgba(0, 0, 0, 0.6); /* Dark transparent overlay */
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #ff6600;
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background-color: #ff4500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to TunesPublish</h1>
+        <p>Your music journey starts here!</p>
+        
+        <!-- Link to Index Page -->
+        <a href="{% url 'index' %}" class="btn">Get Started</a>
+    </div>
+</body>
+</html>

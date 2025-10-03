@@ -20,13 +20,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# SECURITY WARNING: keep the secret key used in production secret! 
 SECRET_KEY = 'rbh8%u_$en!zodi6j_ual3azei=2(@yd1zrl7n0kz^t!xe$t2o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+#DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 DEBUG = True
 
-ALLOWED_HOSTS = ["https://tunespublish-web.vercel.app/", "localhost", "*"]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.vercel.app', '.now.sh']
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 # Application definition
@@ -154,7 +155,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
 # STATICFILES_DIRS = ()
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

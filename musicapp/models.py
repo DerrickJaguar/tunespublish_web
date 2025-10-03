@@ -90,15 +90,27 @@ def save_user_profile(sender, instance, **kwargs):
     instance.userprofile.save()
 
 class UploadedFile(models.Model):
-    title = models.CharField(max_length=100)
-    mp3_file = models.FileField(upload_to='Songs/')
+    Language_Choice = (
+        ('Local', 'Local'),
+        ('English', 'English'),
+    )
+
+    name = models.CharField(max_length=200, default='Unknown Title')
+    album = models.CharField(max_length=200, default='Unknown Album')
+    language = models.CharField(max_length=20, choices=Language_Choice, default='English')
+    song_img = models.FileField(upload_to='Song/', blank=True, null=True)
+    year = models.IntegerField(default=2024)
+    singer = models.CharField(max_length=200, default='Unknown Artist')    
+    song_file = models.FileField(upload_to='Song/', blank=True, null=True)
+    
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.title
+        return f"{self.title} - {self.singer}"
 
     def delete(self, *args, **kwargs):
-        self.mp3_file.delete()  
+        self.song_file.delete(save=False)
+        self.song_img.delete(save=False)
         super().delete(*args, **kwargs)
 
 class UserActivity(models.Model):

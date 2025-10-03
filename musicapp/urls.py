@@ -2,11 +2,14 @@ from django.urls import path
 from .import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import show_recommendations
+from .views import  show_recommendations
 from .views import fetch_songs_by_language
+#from .views import landing
 
 # Add URLConf
 urlpatterns = [
+   
+    #path('', landing, name='landing'),
     path('', views.index, name='index'),
     path('<int:song_id>/', views.detail, name='detail'),
     path('mymusic/', views.mymusic, name='mymusic'),

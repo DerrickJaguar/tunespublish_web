@@ -80,6 +80,11 @@
     -webkit-box-direction: normal;
             flex-direction: row;
   }
+  @media (max-width: 768px) {
+    .sidebar {
+      display: none;
+    }
+  }
   body .player .left {
     width: 80px;
     background-image: none;

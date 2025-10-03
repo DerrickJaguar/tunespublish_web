@@ -21,6 +21,8 @@ from .models import Song, UserActivity
 from django.db.models import Q
 from recommendations.engine.hybrid import HybridRecommendationEngine
 
+#def landing(request):
+    #return render(request, 'musicapp/landing.html')
 def index(request):
     user = request.user
     
@@ -397,8 +399,8 @@ def upload(request):
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('upload') # Redirect to a success page
-        messages.success(request, "Song successfully uploaded")  
+            return redirect('index') # Redirect to a success page
+        messages.success(request, 'Song uploaded successfully!')
     else:
         form = UploadForm()
     return render(request, 'musicapp/upload.html', {'form': form})

@@ -5,7 +5,7 @@ from .models import UploadedFile, UserProfile
 class UploadForm(forms.ModelForm):
     class Meta:
         model = UploadedFile
-        fields = ['title', 'mp3_file']
+        fields = ['name', 'album', 'language','song_img', 'year', 'singer', 'song_file']
 class SettingsForm(forms.ModelForm):
     class Meta:
         model = UserProfile
